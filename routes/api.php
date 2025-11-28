@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DocumentApiController;
+use App\Http\Controllers\Api\CategoryApiController;
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+   Route::get('/get-documents', [DocumentApiController::class, 'index']);
+   Route::get('/get-categories', [CategoryApiController::class, 'index']);
+   Route::get('/get-document/{id}', [DocumentApiController::class, 'show']);
+   Route::post('/documents/search-all', [DocumentApiController::class, 'searchAll']);
+
+
+});

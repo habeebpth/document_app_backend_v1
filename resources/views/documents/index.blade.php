@@ -90,14 +90,14 @@
         </div>
 
        <div class="col-md-6 mb-3">
-    <label>File 1</label>
+    <label>Image File</label>
     <input type="file" name="file_1" id="file_1" class="form-control">
 
     <div id="file1_preview" class="mt-2"></div>
 </div>
 
 <div class="col-md-6 mb-3">
-    <label>File 2</label>
+    <label>PDF File</label>
     <input type="file" name="file_2" id="file_2" class="form-control">
 
     <div id="file2_preview" class="mt-2"></div>

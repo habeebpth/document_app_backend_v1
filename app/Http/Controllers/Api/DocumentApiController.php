@@ -26,6 +26,10 @@ class DocumentApiController extends Controller
         $query->where('subject', 'LIKE', "%{$request->subject}%");
     }
 
+     if (!empty($request->category_id)) {
+        $query->where('category_id', $request->category_id);
+    }
+
     // Search filter (title, subject, date)
     if (!empty($request->search)) {
         $search = $request->search;

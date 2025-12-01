@@ -1,25 +1,23 @@
-@extends('layouts.master')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div style="max-width: 600px; margin: 0 auto; text-align: center;">
 
     <h1 style="margin-bottom: 20px;">Edit User</h1>
 
-    <form method="POST" action="{{ route('users.update', $user->id) }}" 
+    <form method="POST" action="<?php echo e(route('users.update', $user->id)); ?>" 
           style="width: 100%; background: #f8f9fa; padding: 25px; border-radius: 10px;">
-        @csrf
-        @method('PUT')
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('PUT'); ?>
 
         <input type="text" 
                name="name" 
-               value="{{ $user->name }}" 
+               value="<?php echo e($user->name); ?>" 
                placeholder="Name"
                required
                style="width: 100%; padding: 10px; margin-bottom: 15px;">
 
         <input type="email" 
                name="email" 
-               value="{{ $user->email }}" 
+               value="<?php echo e($user->email); ?>" 
                placeholder="Email"
                required
                style="width: 100%; padding: 10px; margin-bottom: 15px;">
@@ -40,12 +38,13 @@
                 multiple 
                 required
                 style="width: 100%; padding: 10px; height: 120px; margin-bottom: 20px;">
-            @foreach($roles as $role)
-                <option value="{{ $role->name }}" 
-                    {{ $user->roles->pluck('name')->contains($role->name) ? 'selected' : '' }}>
-                    {{ $role->name }}
+            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($role->name); ?>" 
+                    <?php echo e($user->roles->pluck('name')->contains($role->name) ? 'selected' : ''); ?>>
+                    <?php echo e($role->name); ?>
+
                 </option>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
 
         <button type="submit"
@@ -56,4 +55,6 @@
     </form>
 
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\USER\Desktop\bexone\resources\views/users/edit.blade.php ENDPATH**/ ?>

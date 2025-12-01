@@ -21,5 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::get('/get-document/{id}', [DocumentApiController::class, 'show']);
    Route::post('/documents/search-all', [DocumentApiController::class, 'searchAll']);
 
+  Route::get('/dashboard', [DocumentApiController::class, 'dashboard']);
+
 
 });

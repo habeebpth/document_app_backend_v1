@@ -11,10 +11,7 @@
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.2",
-<<<<<<< HEAD
         "spatie/laravel-permission": "^6.23",
-=======
->>>>>>> 9953726449f6cec3f1c51ad7166a16ea263cae0b
         "yajra/laravel-datatables-oracle": "^12.6"
     },
     "require-dev": {

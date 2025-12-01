@@ -51,38 +51,6 @@ class DocumentApiController extends Controller
     }
 
  
-
-    // $documents = $query->orderBy('id', 'DESC')->get()->map(function ($doc) {
-    //     return [
-    //         'id' => $doc->id,
-    //         'date' => $doc->date ? \Carbon\Carbon::parse($doc->date)->format('Y-m-d') : null,
-    //         'category_id' => $doc->category_id,
-    //         'subject' => $doc->subject,
-    //         'title' => $doc->title,
-    //         'description' => strip_tags($doc->description),
-    //         'content' => strip_tags($doc->content),
-    //         'file_1' => $doc->file_1 
-    //             ? asset('storage/documents/' . basename($doc->file_1)) 
-    //             : null,
-    //         'file_2' => $doc->file_2 
-    //             ? asset('storage/documents/' . basename($doc->file_2)) 
-    //             : null,
-    //         'created_at' => $doc->created_at 
-    //             ? $doc->created_at->format('Y-m-d H:i:s') 
-    //             : null,
-    //         'updated_at' => $doc->updated_at 
-    //             ? $doc->updated_at->format('Y-m-d H:i:s') 
-    //             : null,
-    //         'status' => $doc->status
-    //     ];
-    // });
-
-    // return response()->json([
-    //     'status' => true,
-    //     'documents' => $documents
-    // ]);
-
-
     $limit = $request->input('limit', 10);  // number of records per request
     $page  = $request->input('page', 1);   // current page, default 1
 
@@ -115,6 +83,84 @@ class DocumentApiController extends Controller
     ]);
 
 }
+
+
+
+
+public function dashboard(Request $request)
+{
+    // -------------------------------
+    // LATEST DOCUMENT
+    // -------------------------------
+    $latestDocument = Document::orderBy('id', 'DESC')->first();
+
+    $latestDocumentData = $latestDocument ? [
+        'id'          => $latestDocument->id,
+        'title'       => $latestDocument->title,
+        'description' => strip_tags($latestDocument->description),
+        'file_url'    => $latestDocument->file_2
+                            ? asset('storage/documents/' . basename($latestDocument->file_2)) 
+                            : null,
+        'uploaded_by' => $latestDocument->uploaded_by ?? 'Admin',
+        'uploaded_at' => $latestDocument->created_at->format('Y-m-d H:i:s'),
+    ] : null;
+
+
+    // -------------------------------
+    // RECENT DOCUMENTS - LAST 10
+    // -------------------------------
+    $recentDocuments = Document::orderBy('id', 'DESC')
+        ->skip(1)
+        ->take(10)
+        ->get()
+        ->map(function ($doc) {
+            return [
+                'id'          => $doc->id,
+                'title'       => $doc->title,
+                'description' => strip_tags($doc->description),
+                'uploaded_at' => $doc->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+
+    // -------------------------------
+    // LATEST SUBJECTS - LAST 4
+    // -------------------------------
+$latestSubjects = Document::whereNotNull('subject')
+    ->where('subject', '!=', '')
+    ->select('subject')
+    ->selectRaw('MAX(created_at) as latest_created_at')
+    ->groupBy('subject')
+    ->orderBy('latest_created_at', 'DESC')
+    ->take(4)
+    ->get()
+    ->map(function ($doc) {
+        return [
+            'name'       => $doc->subject,
+            'created_at' => $doc->latest_created_at 
+                                ? \Carbon\Carbon::parse($doc->latest_created_at)->format('Y-m-d H:i:s')
+                                : null,
+        ];
+    });
+
+
+
+
+    // -------------------------------
+    // FINAL RESPONSE
+    // -------------------------------
+    return response()->json([
+        "error"   => false,
+        "message" => "Dashboard data fetched",
+        "data"    => [
+            "latest_document"  => $latestDocumentData,
+            "recent_documents" => $recentDocuments,
+            "latest_subjects"  => $latestSubjects
+        ]
+    ]);
+}
+
+
 
     public function show($id)
     {

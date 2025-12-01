@@ -1,6 +1,4 @@
-@extends('layouts.master')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <style>
     .users-container {
@@ -76,7 +74,7 @@
 
     <h1>Users</h1>
 
-    <a href="{{ route('users.create') }}" class="create-btn">➕ Create New User</a>
+    <a href="<?php echo e(route('users.create')); ?>" class="create-btn">➕ Create New User</a>
 
     <table>
         <tr>
@@ -87,28 +85,30 @@
             <th>Action</th>
         </tr>
 
-        @foreach($users as $user)
+        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <tr>
-            <td>{{ $user->id }}</td>
-            <td>{{ $user->name }}</td>
-            <td>{{ $user->email }}</td>
-            <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
+            <td><?php echo e($user->id); ?></td>
+            <td><?php echo e($user->name); ?></td>
+            <td><?php echo e($user->email); ?></td>
+            <td><?php echo e(implode(', ', $user->roles->pluck('name')->toArray())); ?></td>
             <td class="action-btns">
-                <a href="{{ route('users.edit', $user->id) }}">Edit</a>
+                <a href="<?php echo e(route('users.edit', $user->id)); ?>">Edit</a>
 
-                <form action="{{ route('users.destroy', $user->id) }}"
+                <form action="<?php echo e(route('users.destroy', $user->id)); ?>"
                       method="POST"
                       style="display:inline;">
-                    @csrf
-                    @method('DELETE')
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
                     <button type="submit" class="delete-btn">Delete</button>
                 </form>
             </td>
         </tr>
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     </table>
 
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\USER\Desktop\bexone\resources\views/users/index.blade.php ENDPATH**/ ?>

@@ -60,7 +60,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
 });
 
+// Route::group(['middleware' => ['auth']], function () {
+//     Route::prefix('admin')->group(function () {
+//         Route::resource('users', UserController::class);
+//     });
+// });
+
+
 // ---------------------- Catch-all route (Always LAST) ----------------------
-Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
-     ->where('any', '.*')
-     ->name('index');
+// Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
+//      ->where('any', '.*')
+//      ->name('index');

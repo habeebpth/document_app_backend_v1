@@ -13,11 +13,18 @@ $setting = Setting::first();
 
 
     <!-- auth page bg -->
- <div class="auth-one-bg-position auth-one-bg"
+@php
+    $bgImage = $setting && $setting->background_image
+        ? asset('storage/settings/' . basename($setting->background_image))
+        : asset('build/icons/auth-one-bg.jpg');
+@endphp
+
+<div class="auth-one-bg-position auth-one-bg"
      id="auth-particles"
-     style="background-image: url('{{ !empty($setting->background_image) ? asset('storage/settings/' . basename($setting->background_image)) : asset('build/icons/auth-one-bg.jpg') }}');
-         background-position: center;
-         background-size: cover;">
+     style="background-image: url('{{ $bgImage }}');
+            background-position: center;
+            background-size: cover;">
+
 
         <div class="bg-overlay"></div>
 
@@ -37,7 +44,7 @@ $setting = Setting::first();
                     <div class="text-center mt-sm-5 mb-4 text-white-50">
                         <div>
                             <a href="index" class="d-inline-block auth-logo">
-                                  <!-- <img src="{{ asset('storage/settings/' . basename($setting->background_image)) }}" alt="Background Image" height="20"> -->
+                                
 
                             </a>
                         </div>

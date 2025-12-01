@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    /**
+     * Mass assignable fields
+     */
     protected $fillable = [
         'name',
         'email',
@@ -20,14 +23,33 @@ class User extends Authenticatable
         'mobile_number',
         'whatsapp_number',
         'user_name',
-        'avatar'
+        'avatar',
     ];
 
-    protected $hidden = ['password','remember_token'];
+    /**
+     * Hidden fields for arrays / JSON
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
+    /**
+     * Field type casting
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s'
+        'created_at'        => 'datetime:Y-m-d H:i:s',
+        'updated_at'        => 'datetime:Y-m-d H:i:s',
     ];
+
+    /**
+     * Automatically hash password when set
+     */
+    public function setPasswordAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['password'] = Hash::make($value);
+        }
+    }
 }

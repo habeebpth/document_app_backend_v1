@@ -8,14 +8,18 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles,SoftDeletes;
 
     /**
      * Mass assignable fields
      */
+
+    protected $dates = ['deleted_at'];
+    
     protected $fillable = [
         'name',
         'email',

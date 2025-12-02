@@ -6,13 +6,32 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
-    public function index()
+   public function index(Request $request)
     {
-        $users = User::with('roles')->get();
-        return view('users.index', compact('users'));
+        if ($request->ajax()) {
+            $users = User::with('roles')->select('users.*');
+
+            return DataTables::of($users)
+                ->addIndexColumn()
+                ->addColumn('roles', function ($user) {
+                    return implode(', ', $user->roles->pluck('name')->toArray());
+                })
+                ->addColumn('action', function ($user) {
+                    return '
+                        <a href="' . route('users.edit', $user->id) . '" class="btn btn-sm btn-primary">Edit</a>
+                        <button class="btn btn-sm btn-danger deleteUserBtn" data-id="' . $user->id . '">Delete</button>
+                    ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        $roles = Role::all();
+        return view('users.index', compact('roles'));
     }
 
     public function create()
@@ -27,13 +46,18 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'roles' => 'required|array'
+            'roles' => 'required|array',
+            'whatsapp_number'  => 'nullable|numeric|digits:10',
+            'mobile_number'  => 'nullable|numeric|digits:10',
+
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => Hash::make($request->password),
+            'mobile_number'     => $request->mobile_number,
+            'whatsapp_number'   => $request->whatsapp_number,
         ]);
 
         $user->syncRoles($request->roles);
@@ -52,12 +76,16 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => "required|email|unique:users,email,{$user->id}",
-            'roles' => 'required|array'
+            'roles' => 'required|array',
+            'whatsapp_number'  => 'nullable|numeric|digits:10',
+            'mobile_number'  => 'nullable|numeric|digits:10',
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'whatsapp_number' => $request->whatsapp_number,
+            'mobile_number' => $request->mobile_number,
         ]);
 
         if ($request->filled('password')) {

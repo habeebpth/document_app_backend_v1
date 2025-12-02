@@ -1,114 +1,103 @@
 @extends('layouts.master')
 
+@section('styles')
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap4.min.css" rel="stylesheet">
+@endsection
+
 @section('content')
 
-<style>
-    .users-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 30px;
-    }
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Users List</h5>
+        <a href="{{ route('users.create') }}" class="btn btn-success">Create New User</a>
+      </div>
 
-    h1 {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-    .create-btn {
-        display: block;
-        width: fit-content;
-        margin: 0 auto 20px auto;
-        background: #007bff;
-        color: white;
-        padding: 10px 18px;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-
-    .create-btn:hover {
-        background: #0056b3;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-
-    table th, table td {
-        padding: 12px;
-        border: 1px solid #ccc;
-        text-align: center;
-    }
-
-    table th {
-        background: #f7f7f7;
-        font-weight: bold;
-    }
-
-    .action-btns a,
-    .action-btns button {
-        margin: 0 5px;
-        padding: 6px 12px;
-        background: #17a2b8;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .action-btns a:hover {
-        background: #0f7283;
-    }
-
-    .delete-btn {
-        background: #dc3545;
-    }
-
-    .delete-btn:hover {
-        background: #a11928;
-    }
-</style>
-
-
-<div class="users-container">
-
-    <h1>Users</h1>
-
-    <a href="{{ route('users.create') }}" class="create-btn">➕ Create New User</a>
-
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Roles</th>
-            <th>Action</th>
-        </tr>
-
-        @foreach($users as $user)
-        <tr>
-            <td>{{ $user->id }}</td>
-            <td>{{ $user->name }}</td>
-            <td>{{ $user->email }}</td>
-            <td>{{ implode(', ', $user->roles->pluck('name')->toArray()) }}</td>
-            <td class="action-btns">
-                <a href="{{ route('users.edit', $user->id) }}">Edit</a>
-
-                <form action="{{ route('users.destroy', $user->id) }}"
-                      method="POST"
-                      style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="delete-btn">Delete</button>
-                </form>
-            </td>
-        </tr>
-        @endforeach
-
-    </table>
-
+      <div class="card-body">
+        <table id="users-table" class="table table-bordered table-striped align-middle nowrap w-100">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Roles</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+$(function () {
+
+    // --------------------------
+    // CSRF Setup
+    // --------------------------
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    // --------------------------
+    // DataTable
+    // --------------------------
+    let table = $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true,
+        ajax: "{{ route('users.index') }}",
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'name', name: 'name' },
+            { data: 'email', name: 'email' },
+            { data: 'roles', name: 'roles', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ]
+    });
+
+    // --------------------------
+    // DELETE USER
+    // --------------------------
+    $('body').on('click', '.deleteUserBtn', function () {
+        let id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This user will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/users/${id}`,
+                    type: 'POST',
+                    data: { 
+                        _method: 'DELETE',
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        table.ajax.reload(null, false);
+                        Swal.fire('Deleted!', 'User deleted successfully', 'success');
+                    },
+                    error: function (err) {
+                        Swal.fire('Error', err.responseJSON?.message || 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+});
+</script>
+@endpush

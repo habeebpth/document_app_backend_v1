@@ -16,6 +16,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+// Route::post('/change-password', [AuthController::class, 'changePassword']);
+
    Route::get('/get-documents', [DocumentApiController::class, 'index']);
    Route::get('/get-categories', [CategoryApiController::class, 'index']);
    Route::get('/get-document/{id}', [DocumentApiController::class, 'show']);

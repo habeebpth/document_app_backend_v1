@@ -96,14 +96,61 @@
         </ul>
 
 
+        <li class="nav-item">
+        <a href="{{ route('documents.index') }}"
+        class="nav-link {{ request()->routeIs('documents.*') ? 'active' : '' }}">
+        <i class="ri-dashboard-2-line"></i> <span>Documents</span>
+        </a>
+
+        </li> <!-- end Dashboard Menu -->
+
+      
+
+
+
+
 
           <li class="nav-item">
-                    <a href="{{ route('documents.index') }}"
-                   class="nav-link {{ request()->routeIs('documents.*') ? 'active' : '' }}">
-                        <i class="ri-dashboard-2-line"></i> <span>Documents</span>
-                    </a>
-                  
-                </li> <!-- end Dashboard Menu -->
+    <a class="nav-link menu-link
+        @if (request()->routeIs('users.*') || request()->routeIs('roles.*'))
+            active
+        @endif"
+        href="#sidebarUsers"
+        data-bs-toggle="collapse"
+        role="button"
+        aria-expanded="
+            {{ request()->routeIs('users.*') || request()->routeIs('roles.*')  ? 'true' : 'false' }}"
+        aria-controls="sidebarUsers">
+
+<i class="ri-user-line"></i>
+        <span>User Management</span>
+    </a>
+
+    <div class="collapse menu-dropdown 
+        @if (request()->routeIs('users.*') || request()->routeIs('roles.*'))
+            show
+        @endif"
+        id="sidebarUsers">
+
+        <ul class="nav nav-sm flex-column">
+
+            <li class="nav-item">
+                <a href="{{ route('users.index') }}"
+                   class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                 Users
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('roles.index') }}"
+                   class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                    Roles
+                </a>
+            </li>
+
+    
+        </ul>
+
 
     </div>
 </li>

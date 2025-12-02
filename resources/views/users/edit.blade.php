@@ -34,6 +34,27 @@
                placeholder="Confirm Password"
                style="width: 100%; padding: 10px; margin-bottom: 15px;">
 
+
+ 
+            <input type="text" name="mobile_number" 
+            placeholder="Mobile Number"  
+            maxlength="10"      value="{{ $user->mobile_number }}" 
+            pattern="\d{10}"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"        
+            style="width: 100%; padding: 10px; margin-bottom: 15px;">
+
+            <!-- <label>WhatsApp Number</label> -->
+            <input type="text" name="whatsapp_number"    
+            value="{{ $user->whatsapp_number }}" 
+            placeholder="WhatsApp Number" 
+            maxlength="10"
+            pattern="\d{10}"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"        
+            style="width: 100%; padding: 10px; margin-bottom: 15px;">
+
+
+
+
         <label style="font-weight: bold; display: block; margin-bottom: 10px;">Roles</label>
 
         <select name="roles[]" 
@@ -48,11 +69,26 @@
             @endforeach
         </select>
 
+       <div style="display: flex; justify-content: space-between; gap: 10px;">
+
+        <!-- UPDATE BUTTON -->
         <button type="submit"
-                style="width: 100%; padding: 12px; background: #007bff; color: #fff; 
+                style="flex: 1; padding: 12px; background: #007bff; color: #fff; 
                        border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
             Update
         </button>
+
+        <!-- CANCEL BUTTON (close modal) -->
+       <button type="button"
+        onclick="window.location='{{ route('users.index') }}'"
+        style="flex: 1; padding: 12px; background: #6c757d; color: #fff; 
+               border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+    Cancel
+</button>
+
+
+    </div>
+
     </form>
 
 </div>

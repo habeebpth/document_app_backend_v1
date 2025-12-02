@@ -58,6 +58,12 @@ Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class
 // ---------------------- Users Resource (Protected) ----------------------
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
+
+    Route::get('/roles', [App\Http\Controllers\RoleController::class, 'index'])->name('roles.index');
+    Route::post('/roles', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{id}/edit', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{id}', [App\Http\Controllers\RoleController::class, 'destroy'])->name('roles.destroy');
 });
 
 // Route::group(['middleware' => ['auth']], function () {
@@ -68,6 +74,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 // ---------------------- Catch-all route (Always LAST) ----------------------
-// Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
-//      ->where('any', '.*')
-//      ->name('index');
+Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
+     ->where('any', '.*')
+     ->name('index');

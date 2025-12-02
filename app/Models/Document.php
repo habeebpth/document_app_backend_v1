@@ -16,10 +16,17 @@ class Document extends Model
         'description', 'content', 'file_1', 'file_2', 'status'
     ];
 
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
+
+
     public function category()
     {
-        return $this->belongsTo(Category::class);
+    return $this->belongsTo(Category::class, 'category_id');
     }
+
 
     public function tags()
     {

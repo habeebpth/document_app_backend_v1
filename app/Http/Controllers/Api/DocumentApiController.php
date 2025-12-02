@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Schema;
 class DocumentApiController extends Controller
 {
    
-   public function index(Request $request)
+  public function index(Request $request)
 {
-    $query = Document::query();
+    // Load documents with category relationship
+    $query = Document::with('category');
 
     // Filter by exact date
     if (!empty($request->date)) {
@@ -26,7 +27,8 @@ class DocumentApiController extends Controller
         $query->where('subject', 'LIKE', "%{$request->subject}%");
     }
 
-     if (!empty($request->category_id)) {
+    // Filter by category
+    if (!empty($request->category_id)) {
         $query->where('category_id', $request->category_id);
     }
 
@@ -50,42 +52,39 @@ class DocumentApiController extends Controller
         $query->whereMonth('date', $request->month);
     }
 
- 
-    $limit = $request->input('limit', 10);  // number of records per request
-    $page  = $request->input('page', 1);   // current page, default 1
+    // Pagination
+    $limit = $request->input('limit', 10);
+    $page  = $request->input('page', 1);
 
     $documents = $query->orderBy('id', 'DESC')
-    ->skip(($page - 1) * $limit) // skip previous records
-    ->take($limit)               // take only $limit records
-    ->get()
-    ->map(function ($doc) {
-    return [
-    'id' => $doc->id,
-    'date' => $doc->date ? \Carbon\Carbon::parse($doc->date)->format('Y-m-d') : null,
-    'category_id' => $doc->category_id,
-    'subject' => $doc->subject,
-    'title' => $doc->title,
-    'description' => strip_tags($doc->description),
-    'content' => strip_tags($doc->content),
-    'file_1' => $doc->file_1 ? asset('storage/documents/' . basename($doc->file_1)) : null,
-    'file_2' => $doc->file_2 ? asset('storage/documents/' . basename($doc->file_2)) : null,
-    'created_at' => $doc->created_at ? $doc->created_at->format('Y-m-d H:i:s') : null,
-    'updated_at' => $doc->updated_at ? $doc->updated_at->format('Y-m-d H:i:s') : null,
-    'status' => $doc->status,
-    ];
-    });
+        ->skip(($page - 1) * $limit)
+        ->take($limit)
+        ->get()
+        ->map(function ($doc) {
+            return [
+                'id' => $doc->id,
+                'date' => $doc->date ? \Carbon\Carbon::parse($doc->date)->format('Y-m-d') : null,
+                // 'category_id' => $doc->category_id,
+                'category_name' => $doc->category ? $doc->category->name : null, // ADDED
+                'subject' => $doc->subject,
+                'title' => $doc->title,
+                'description' => strip_tags($doc->description),
+                'content' => strip_tags($doc->content),
+                'file_1' => $doc->file_1 ? asset('storage/documents/' . basename($doc->file_1)) : null,
+                'file_2' => $doc->file_2 ? asset('storage/documents/' . basename($doc->file_2)) : null,
+                'created_at' => $doc->created_at ? $doc->created_at->format('Y-m-d H:i:s') : null,
+                'updated_at' => $doc->updated_at ? $doc->updated_at->format('Y-m-d H:i:s') : null,
+                'status' => $doc->status,
+            ];
+        });
 
     return response()->json([
-    'status' => true,
-    'page' => $page,
-    'limit' => $limit,
-    'documents' => $documents
+        'status' => true,
+        'page' => $page,
+        'limit' => $limit,
+        'documents' => $documents
     ]);
-
 }
-
-
-
 
 public function dashboard(Request $request)
 {
@@ -95,14 +94,17 @@ public function dashboard(Request $request)
     $latestDocument = Document::orderBy('id', 'DESC')->first();
 
     $latestDocumentData = $latestDocument ? [
-        'id'          => $latestDocument->id,
-        'title'       => $latestDocument->title,
-        'description' => strip_tags($latestDocument->description),
-        'file_url'    => $latestDocument->file_2
+        'id'            => $latestDocument->id,
+        'title'         => $latestDocument->title,
+        'description'   => strip_tags($latestDocument->description),
+        'file_url'      => $latestDocument->file_2
                             ? asset('storage/documents/' . basename($latestDocument->file_2)) 
                             : null,
-        'uploaded_by' => $latestDocument->uploaded_by ?? 'Admin',
-        'uploaded_at' => $latestDocument->created_at->format('Y-m-d H:i:s'),
+        'file_1'        => $latestDocument->file_1
+                            ? asset('storage/documents/' . basename($latestDocument->file_1)) 
+                            : null,
+        'uploaded_by'   => $latestDocument->uploaded_by ?? 'Admin',
+        'uploaded_at'   => $latestDocument->created_at->format('Y-m-d H:i:s'),
     ] : null;
 
 
@@ -118,6 +120,8 @@ public function dashboard(Request $request)
                 'id'          => $doc->id,
                 'title'       => $doc->title,
                 'description' => strip_tags($doc->description),
+                'file_1'      => $doc->file_1
+                                 ? asset('storage/documents/' . basename($doc->file_1)) : null,
                 'uploaded_at' => $doc->created_at->format('Y-m-d H:i:s'),
             ];
         });

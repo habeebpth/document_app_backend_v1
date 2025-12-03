@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CategoryApiController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -16,7 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-// Route::post('/change-password', [AuthController::class, 'changePassword']);
+Route::post('/change-password', [AuthController::class, 'changePassword']);
 
    Route::get('/get-documents', [DocumentApiController::class, 'index']);
    Route::get('/get-categories', [CategoryApiController::class, 'index']);

@@ -7,19 +7,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\CanResetPassword;  // ADD THIS
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanResetPassword  // ADD implements
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,SoftDeletes;
-
-    /**
-     * Mass assignable fields
-     */
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     protected $dates = ['deleted_at'];
-    
+
     protected $fillable = [
         'name',
         'email',
@@ -28,33 +24,26 @@ class User extends Authenticatable
         'whatsapp_number',
         'user_name',
         'avatar',
-        'original_pass'
+        // 'original_pass'  // REMOVE THIS - security risk!
     ];
 
-    /**
-     * Hidden fields for arrays / JSON
-     */
     protected $hidden = [
         'password',
         'remember_token',
+        'original_pass',  // Hide if you keep it
     ];
 
-    /**
-     * Field type casting
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'created_at'        => 'datetime:Y-m-d H:i:s',
         'updated_at'        => 'datetime:Y-m-d H:i:s',
     ];
 
-    /**
-     * Automatically hash password when set
-     */
-    public function setPasswordAttribute($value)
-    {
-        if (!empty($value)) {
-            $this->attributes['password'] = Hash::make($value);
-        }
-    }
+    // REMOVE THIS METHOD - it causes double hashing!
+    // public function setPasswordAttribute($value)
+    // {
+    //     if (!empty($value)) {
+    //         $this->attributes['password'] = Hash::make($value);
+    //     }
+    // }
 }

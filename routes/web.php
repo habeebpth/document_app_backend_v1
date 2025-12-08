@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DocumentController;
@@ -15,6 +16,17 @@ use App\Http\Controllers\UserController; // <-- Added
 */
 
 Auth::routes();
+
+
+
+Route::get('/test-mail', function () {
+    Mail::raw('Test email from Laravel', function ($message) {
+        $message->to('your-test-email@example.com')
+                ->subject('Test Email');
+    });
+    return 'Email sent!';
+});
+
 
 // ---------------------- Categories ----------------------
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

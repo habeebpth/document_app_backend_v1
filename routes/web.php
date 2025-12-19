@@ -84,13 +84,6 @@ Route::group(['middleware' => ['auth']], function () {
 //     });
 // });
 
-
-// ---------------------- Catch-all route (Always LAST) ----------------------
-Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
-    ->where('any', '.*')
-    ->name('index');
-
-
 Route::get('/privacy_policy', function () {
     return <<<'HTML'
     <!DOCTYPE html>
@@ -495,3 +488,12 @@ Route::get('/account_deletion', function () {
     </html>
     HTML;
 });
+
+
+// ---------------------- Catch-all route (Always LAST) ----------------------
+// Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])
+//     ->where('any', '.*')
+//     ->name('index');
+
+
+
